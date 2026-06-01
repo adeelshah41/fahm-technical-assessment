@@ -11,3 +11,17 @@ __pycache__/
 data/
 venv/
 .venv/
+
+# Zip archives — never commit binaries
+*.zip
+
+# AI agent context files
+AGENT_CONTEXT_FAHM_PROJECT.md
+
+# Large model weights
+*.pt
+*.pth
+*.h5
+
+# Training data
+model/data/
