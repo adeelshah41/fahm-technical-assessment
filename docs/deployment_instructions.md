@@ -31,15 +31,27 @@ git add frontend/
 git commit -m "Update frontend: [describe what you changed]"
 ```
 
-### Step 3: Push to GitHub
-Push the commit to your main GitHub repository:
+### Step 3: Push to Technical Assessment Repository
+Push the commit to your main technical assessment GitHub repository:
 ```bash
-git push origin master
+git push origin main
 ```
-*(If your default branch is `main` instead of `master`, use `git push origin main` instead).*
 
-### Step 4: Verification
-* **Vercel Auto-Deployment:** Vercel is connected directly to your GitHub repository. It will automatically detect the push, trigger a production build, and update the live website within 1–2 minutes.
+### Step 4: Deploy to Vercel (Live App)
+The live Vercel website is connected to your frontend-only repository (`fahm-mammogram-classifier`). To push the `frontend/` subdirectory changes to that repository and trigger the Vercel build, run the following commands in order:
+```bash
+# 1. Create a local temporary branch containing only the frontend/ folder contents
+git subtree split --prefix=frontend -b temp-deploy-branch
+
+# 2. Force-push this temporary branch to the live Vercel repository
+git push https://github.com/adeelshah41/fahm-mammogram-classifier.git temp-deploy-branch:main --force
+
+# 3. Delete the temporary branch
+git branch -D temp-deploy-branch
+```
+
+### Step 5: Verification
+* **Vercel Auto-Deployment:** Vercel will detect the push to `fahm-mammogram-classifier`, trigger the build, and deploy the update in 1–2 minutes.
 * **Check Live Site:** Open [https://fahm-mammogram-classifier.vercel.app](https://fahm-mammogram-classifier.vercel.app) to verify the changes.
 
 ---
