@@ -23,5 +23,10 @@ def run_inference(tensor: torch.Tensor) -> tuple[str, float]:
     with torch.no_grad():
         logit = model(tensor).squeeze()
         prob = torch.sigmoid(logit).item()
-    label = "Malignant" if prob >= THRESHOLD else "Benign/Normal"
-    return label, prob
+    if prob >= THRESHOLD:
+        label = "Malignant"
+        confidence = prob
+    else:
+        label = "Benign/Normal"
+        confidence = 1.0 - prob
+    return label, confidence
