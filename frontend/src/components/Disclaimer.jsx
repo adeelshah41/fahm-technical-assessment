@@ -7,32 +7,32 @@ export default function Disclaimer() {
 
   return (
     <div className="animate-fade-in-up">
-      <div className="relative glass-light rounded-xl px-4 py-3 flex items-start gap-3">
-        {/* Icon */}
+      <div className="relative glass-light rounded-xl px-4 py-3 flex items-start gap-3 border-l-2 border-amber-500/40">
+        {/* Shield Icon */}
         <div className="shrink-0 mt-0.5">
-          <div className="w-6 h-6 rounded-md bg-amber-500/10 flex items-center justify-center">
-            <svg className="w-3.5 h-3.5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+          <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center">
+            <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
             </svg>
           </div>
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold text-amber-400/90 uppercase tracking-wider mb-0.5">
-            Medical Disclaimer
+          <p className="text-[11px] font-semibold text-amber-400/90 uppercase tracking-widest mb-0.5">
+            Clinical Disclaimer
           </p>
           <p className="text-xs text-slate-400 leading-relaxed">
-            This tool is for <span className="text-slate-300">research and educational purposes only</span>. 
-            It is not a substitute for professional medical advice, diagnosis, or treatment. 
-            Always seek the guidance of a qualified healthcare provider.
+            This AI system is for <span className="text-slate-300 font-medium">research and educational purposes only</span>.
+            It is not intended as a substitute for professional medical diagnosis.
+            Always consult a board-certified radiologist for clinical evaluation.
           </p>
         </div>
 
-        {/* Dismiss button */}
+        {/* Dismiss */}
         <button
           onClick={() => setDismissed(true)}
-          className="shrink-0 text-slate-500 hover:text-slate-300 transition-colors p-1 -mr-1 cursor-pointer"
+          className="shrink-0 text-slate-600 hover:text-slate-400 transition-colors p-1 -mr-1 cursor-pointer"
           aria-label="Dismiss disclaimer"
         >
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
