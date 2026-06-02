@@ -21,46 +21,9 @@ function formatFileSize(bytes) {
   return (bytes / (1024 * 1024)).toFixed(1) + " MB"
 }
 
-/* ─── Image Filter Toolbar ─── */
-function FilterToolbar({ activeFilter, onFilterChange }) {
-  const filters = [
-    { id: "none", label: "Original", icon: "◉" },
-    { id: "invert", label: "Invert", icon: "◐" },
-    { id: "highcontrast", label: "Hi-Contrast", icon: "◈" },
-    { id: "grayscale", label: "Grayscale", icon: "◎" },
-  ]
-
-  return (
-    <div className="flex items-center gap-1 p-1 glass-light rounded-lg">
-      {filters.map((f) => (
-        <button
-          key={f.id}
-          onClick={(e) => {
-            e.stopPropagation()
-            onFilterChange(f.id)
-          }}
-          className={`
-            flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[10px] font-medium uppercase tracking-wider
-            transition-all duration-200 cursor-pointer
-            ${activeFilter === f.id
-              ? "bg-teal-500/15 text-teal-400 border border-teal-500/20"
-              : "text-slate-500 hover:text-slate-300 border border-transparent"
-            }
-          `}
-          title={f.label}
-        >
-          <span className="text-xs">{f.icon}</span>
-          <span className="hidden sm:inline">{f.label}</span>
-        </button>
-      ))}
-    </div>
-  )
-}
-
 export default function UploadZone({ onFileSelect, file, preview, disabled }) {
   const [isDragging, setIsDragging] = useState(false)
   const [rejectMessage, setRejectMessage] = useState(null)
-  const [activeFilter, setActiveFilter] = useState("none")
   const inputRef = useRef(null)
   const dragCounterRef = useRef(0)
 
@@ -71,7 +34,6 @@ export default function UploadZone({ onFileSelect, file, preview, disabled }) {
         setRejectMessage("Unsupported file type. Please upload PNG, JPEG, or DICOM (.dcm) files.")
         return
       }
-      setActiveFilter("none")
       onFileSelect(f)
     },
     [onFileSelect]
@@ -118,15 +80,6 @@ export default function UploadZone({ onFileSelect, file, preview, disabled }) {
     [handleFile]
   )
 
-  const filterClass =
-    activeFilter === "invert"
-      ? "filter-invert"
-      : activeFilter === "highcontrast"
-        ? "filter-highcontrast"
-        : activeFilter === "grayscale"
-          ? "filter-grayscale"
-          : ""
-
   /* ─── Preview Card: Active Medical Viewport ─── */
   if (file) {
     return (
@@ -140,12 +93,6 @@ export default function UploadZone({ onFileSelect, file, preview, disabled }) {
                 Imaging Viewport
               </span>
             </div>
-            {preview && (
-              <FilterToolbar
-                activeFilter={activeFilter}
-                onFilterChange={setActiveFilter}
-              />
-            )}
           </div>
 
           {/* Image Preview / DICOM Placeholder */}
@@ -154,7 +101,7 @@ export default function UploadZone({ onFileSelect, file, preview, disabled }) {
               <img
                 src={preview}
                 alt="Mammogram preview"
-                className={`max-h-[420px] w-auto object-contain p-3 transition-all duration-300 ${filterClass}`}
+                className="max-h-[420px] w-auto object-contain p-3 transition-all duration-300"
               />
             ) : (
               <div className="flex flex-col items-center gap-3 p-8 text-center">

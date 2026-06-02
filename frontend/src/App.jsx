@@ -35,17 +35,15 @@ function Header({ apiStatus }) {
         <div className="inline-flex items-center justify-center mb-5">
           <div className="relative">
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-500 blur-xl opacity-20 pulse-ring" />
-            <div className="relative glass-raised rounded-2xl p-3.5 glow-teal border border-teal-500/10">
-              <svg className="w-9 h-9 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 0-6.23.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0 1 12 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
-              </svg>
+            <div className="relative glass-raised rounded-2xl p-2 glow-teal border border-teal-500/10 flex items-center justify-center bg-slate-950/80">
+              <img src="/logo.png" alt="FAHM Biotech Logo" className="h-14 w-auto object-contain max-w-[180px] rounded-lg" />
             </div>
           </div>
         </div>
 
         <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight">
           <span className="bg-gradient-to-r from-teal-400 via-cyan-400 to-teal-300 bg-clip-text text-transparent">
-            FAHM
+            FAHM Biotech
           </span>
         </h1>
         <p className="mt-2 text-base sm:text-lg text-slate-400 font-light tracking-wide">
@@ -274,7 +272,7 @@ export default function App() {
         <footer className="mt-16 text-center">
           <div className="h-px bg-gradient-to-r from-transparent via-slate-800/60 to-transparent mb-6" />
           <div className="flex items-center justify-center gap-3 text-[10px] text-slate-600">
-            <span className="uppercase tracking-widest font-medium">FAHM</span>
+            <span className="uppercase tracking-widest font-medium">FAHM Biotech</span>
             <span className="w-1 h-1 rounded-full bg-slate-700" />
             <span>EfficientNet-B0 · CBIS-DDSM</span>
             <span className="w-1 h-1 rounded-full bg-slate-700" />
