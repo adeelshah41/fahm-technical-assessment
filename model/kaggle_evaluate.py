@@ -139,7 +139,7 @@ def build_model(device):
     model = models.efficientnet_b0(weights=None)
     in_features = model.classifier[1].in_features
     model.classifier = nn.Sequential(
-        nn.Dropout(p=0.2, inplace=True),
+        nn.Dropout(p=0.4, inplace=True),
         nn.Linear(in_features, 1),
     )
     return model.to(device)

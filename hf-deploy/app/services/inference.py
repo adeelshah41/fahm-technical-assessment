@@ -12,7 +12,11 @@ def load_model():
     global _model
     if _model is None:
         model = models.efficientnet_b0(weights=None)
-        model.classifier[1] = nn.Linear(model.classifier[1].in_features, 1)
+        in_features = model.classifier[1].in_features
+        model.classifier = nn.Sequential(
+            nn.Dropout(p=0.4, inplace=True),
+            nn.Linear(in_features, 1),
+        )
         model.load_state_dict(torch.load(MODEL_PATH, map_location="cpu"))
         model.eval()
         _model = model

@@ -47,10 +47,13 @@ train_transforms = transforms.Compose([
     transforms.Resize((config.IMG_SIZE, config.IMG_SIZE)),
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.RandomVerticalFlip(p=0.5),
+    transforms.RandomRotation(degrees=15),
+    transforms.RandomAffine(degrees=0, translate=(0.1, 0.1)),
     transforms.ColorJitter(brightness=0.2, contrast=0.2),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406],
                          std=[0.229, 0.224, 0.225]),
+    transforms.RandomErasing(p=0.2, scale=(0.02, 0.1)),
 ])
 
 val_transforms = transforms.Compose([
@@ -71,7 +74,7 @@ def build_model(device: torch.device) -> nn.Module:
     model = models.efficientnet_b0(weights=weights)
     in_features = model.classifier[1].in_features
     model.classifier = nn.Sequential(
-        nn.Dropout(p=0.2, inplace=True),
+        nn.Dropout(p=0.4, inplace=True),
         nn.Linear(in_features, 1),
     )
     return model.to(device)
@@ -191,12 +194,8 @@ def main():
     # ── 3. Model, loss, optimizer ──
     model = build_model(device)
 
-    # pos_weight compensates for class imbalance in the loss as well
-    num_neg = int((train_labels == 0).sum())
-    num_pos = int((train_labels == 1).sum())
-    pos_weight = torch.tensor([num_neg / max(num_pos, 1)], device=device)
-    criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
-    print(f"pos_weight = {pos_weight.item():.3f}  (neg={num_neg}, pos={num_pos})")
+    # Removed pos_weight because WeightedRandomSampler handles class imbalance in train_loader.
+    criterion = nn.BCEWithLogitsLoss()
 
     optimizer = torch.optim.Adam(
         model.parameters(),
@@ -204,8 +203,13 @@ def main():
         weight_decay=config.WEIGHT_DECAY,
     )
 
+    # Cosine Annealing Learning Rate Scheduler
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config.NUM_EPOCHS)
+
     # ── 4. Training loop ──
     best_auc = 0.0
+    patience = 5
+    epochs_no_improve = 0
     save_dir = os.path.dirname(config.MODEL_SAVE_PATH)
     if save_dir:
         os.makedirs(save_dir, exist_ok=True)
@@ -213,6 +217,7 @@ def main():
     for epoch in range(1, config.NUM_EPOCHS + 1):
         train_loss = train_one_epoch(model, train_loader, criterion, optimizer, device)
         val_loss, val_auc = evaluate(model, val_loader, criterion, device)
+        scheduler.step()
 
         print(
             f"Epoch {epoch:02d}/{config.NUM_EPOCHS}  "
@@ -225,6 +230,12 @@ def main():
             best_auc = val_auc
             torch.save(model.state_dict(), config.MODEL_SAVE_PATH)
             print(f"  ✓ Best model saved (AUC={best_auc:.4f})")
+            epochs_no_improve = 0
+        else:
+            epochs_no_improve += 1
+            if epochs_no_improve >= patience:
+                print(f"Early stopping triggered after {epoch} epochs.")
+                break
 
     print(f"\nTraining complete. Best Val AUC: {best_auc:.4f}")
 
