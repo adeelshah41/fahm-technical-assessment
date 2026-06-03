@@ -67,24 +67,25 @@ To bridge the gap to clinical standards, we restructured the baseline training p
 
 ---
 
-## 4. Performance Metrics & Threshold Sweep Analysis
-Evaluating the final optimized B0 model on the held-out test set ($535$ images), the model achieved a **Test AUC-ROC of 0.8549** (an improvement over the baseline `0.8417`).
+## 4. Performance Metrics
+Evaluating the final optimized B0 model on the held-out test set ($535$ images), the model achieved the following performance metrics at the default classification threshold of `0.50`:
 
-### Threshold Sweep Matrix
-The classification threshold determines the trade-off between Sensitivity (detecting cancer) and Specificity (preventing false alarms). Below is the sweep analysis of the trained model:
+* **AUC-ROC:** 0.85
+* **Accuracy:** 76.45%
+* **Sensitivity (Recall):** 80.28%
+* **Specificity:** 73.82%
 
-![Threshold Sweep Sweep](./ref_images/threshold_analysis%20(3).png)
+### Visualizations & Diagnostics
 
-### Key Operating Points
+#### Confusion Matrix
+Below is the confusion matrix (often called the confidence matrix) showing the distribution of predictions on the test set ($TN=234$, $FP=83$, $FN=43$, $TP=175$):
 
-| Operating Point | Threshold | Sensitivity (Recall) | Specificity (TNR) | Accuracy | Clinical Use Case |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Baseline** | `0.50` | 80.28% | 73.82% | 76.45% | Standard classification boundary |
-| **Youden-Optimal (Balanced)** | **`0.51`** | **79.36%** | **75.39%** | **77.01%** | **Live Deployment standard** (maximizes Youden's J-index) |
-| **Clinical Screening** | **`0.44`** | **85.78%** | **67.82%** | **75.14%** | Screening triage (exceeds medical $\ge 85\%$ sensitivity standard) |
+![Confusion Matrix](./ref_images/confusion_matrix.png)
 
-* **Live Deployment configuration:** The system is set to **`THRESHOLD = 0.51`** to deliver balanced predictions (79.36% Sensitivity and 75.39% Specificity).
-* **Clinical Safety:** If the workstation is used purely as a high-sensitivity triage screening tool, the backend threshold can be dialed down to **`0.44`** to catch **$85.78\%$** of all malignant cases, satisfying screening standards while maintaining a $67.82\%$ specificity to limit radiologist fatigue.
+#### Threshold Sweep Analysis
+The classification threshold sweep curve illustrates the trade-off between Sensitivity, Specificity, Accuracy, and F1-Score across different boundaries:
+
+![Threshold Sweep Analysis](./ref_images/threshold_analysis%20(3).png)
 
 ---
 
