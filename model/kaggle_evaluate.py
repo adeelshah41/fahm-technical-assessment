@@ -115,16 +115,8 @@ def prepare_dataframe(data_root: str, csv_root: str) -> pd.DataFrame:
     print(f"Total Dataset Built: {len(result)} images (Malignant={int((result['label']==1).sum())}, Benign={int((result['label']==0).sum())})")
     return result
 
-class MammogramDataset(Dataset):
-    def __init__(self, dataframe, transform=None):
-        self.df = dataframe.reset_index(drop=True)
-        self.transform = transform
-    def __len__(self): return len(self.df)
-    def __getitem__(self, idx):
-        row = self.df.iloc[idx]
-        image = Image.open(row["image_path"]).convert("RGB")
-        if self.transform: image = self.transform(image)
-        return image, int(row["label"])
+from dataset import MammogramDataset
+
 
 eval_transforms = transforms.Compose([
     transforms.Resize((IMG_SIZE, IMG_SIZE)),
