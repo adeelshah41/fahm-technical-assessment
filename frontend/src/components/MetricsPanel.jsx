@@ -4,16 +4,14 @@
    Confusion Matrix, and explanatory notes.
    ═══════════════════════════════════════════ */
 
-/* ── Validated Model Metrics (Kaggle evaluation, threshold=0.37 Youden-optimal) ── */
+/* ── Validated Model Metrics (Kaggle evaluation, threshold=0.51 Youden-optimal) ── */
 const METRICS = {
-  accuracy: 0.7439,
-  precision: 0.6462,
-  recall: 0.8211,       // Sensitivity / TPR
-  specificity: 0.6909,  // TNR
-  f1: 0.7232,
-  aucRoc: 0.8417,
-  threshold: 0.37,
-  confusion: { tn: 219, fp: 98, fn: 39, tp: 179 },
+  accuracy: 0.7701,
+  recall: 0.7936,       // Sensitivity / TPR
+  specificity: 0.7539,  // TNR
+  aucRoc: 0.8549,
+  threshold: 0.51,
+  confusion: { tn: 239, fp: 78, fn: 45, tp: 173 },
   testSetSize: 535,
   malignantCount: 218,
   benignCount: 317,
@@ -96,13 +94,11 @@ export default function MetricsPanel() {
   return (
     <div className="space-y-5 tab-content">
       {/* Key Metrics Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 stagger-children">
+      <div className="grid grid-cols-2 gap-3 stagger-children">
         <MetricCard label="AUC-ROC" value={METRICS.aucRoc} description="Area Under Curve" color="teal" />
         <MetricCard label="Accuracy" value={METRICS.accuracy} description="Overall correct" color="cyan" />
         <MetricCard label="Sensitivity" value={METRICS.recall} description="True Positive Rate" color="emerald" />
         <MetricCard label="Specificity" value={METRICS.specificity} description="True Negative Rate" color="amber" />
-        <MetricCard label="Precision" value={METRICS.precision} description="Positive Predictive" color="teal" />
-        <MetricCard label="F1-Score" value={METRICS.f1} description="Harmonic Mean" color="cyan" />
       </div>
 
       {/* Confusion Matrix */}
@@ -133,8 +129,8 @@ export default function MetricsPanel() {
             <span className="text-slate-400 font-medium">Why accuracy alone is insufficient:</span>{" "}
             In screening tasks with class imbalance, a model could achieve high accuracy by simply predicting the majority class.
             Sensitivity (Recall) ensures malignant cases are not missed, while Specificity minimizes false alarms.
-            The classification threshold was tuned to <span className="text-teal-400 font-mono font-semibold">0.37</span> (Youden-optimal) to prioritize cancer detection.
-            The AUC-ROC of <span className="text-teal-400 font-mono font-semibold">0.84</span> indicates strong discriminative ability across all thresholds.
+            The classification threshold was tuned to <span className="text-teal-400 font-mono font-semibold">0.51</span> (Youden-optimal) to prioritize cancer detection.
+            The AUC-ROC of <span className="text-teal-400 font-mono font-semibold">0.85</span> indicates strong discriminative ability across all thresholds.
           </p>
         </div>
       </div>

@@ -4,14 +4,14 @@ from torchvision import models
 import os
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "../models/model.pt")
-THRESHOLD = 0.37
+THRESHOLD = 0.51
 
 _model = None
 
 def load_model():
     global _model
     if _model is None:
-        model = models.efficientnet_b4(weights=None)
+        model = models.efficientnet_b0(weights=None)
         in_features = model.classifier[1].in_features
         model.classifier = nn.Sequential(
             nn.Dropout(p=0.4, inplace=True),
