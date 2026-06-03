@@ -128,7 +128,7 @@ eval_transforms = transforms.Compose([
 # 3. Model Logic
 # ==========================================
 def build_model(device):
-    model = models.efficientnet_b0(weights=None)
+    model = models.efficientnet_b4(weights=None)
     in_features = model.classifier[1].in_features
     model.classifier = nn.Sequential(
         nn.Dropout(p=0.4, inplace=True),

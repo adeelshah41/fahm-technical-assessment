@@ -31,8 +31,8 @@ from dataset import MammogramDataset, prepare_dataframe
 # ────────────────────────────────────────────────────────
 
 def build_model(device: torch.device) -> nn.Module:
-    """Reconstruct the EfficientNet-B0 architecture (no pretrained weights)."""
-    model = models.efficientnet_b0(weights=None)
+    """Reconstruct the EfficientNet-B4 architecture (no pretrained weights)."""
+    model = models.efficientnet_b4(weights=None)
     in_features = model.classifier[1].in_features
     model.classifier = nn.Sequential(
         nn.Dropout(p=0.4, inplace=True),

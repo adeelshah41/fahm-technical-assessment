@@ -9,8 +9,9 @@ CSV_ROOT = "./data/csv"         # Root folder containing CSV metadata files
 
 # ──────────────── Image / Loader ────────────────
 IMG_SIZE = 224                  # Input image size (height == width)
-BATCH_SIZE = 32
+BATCH_SIZE = 16                 # Reduced to 16 for EfficientNet-B4 to fit GPU memory
 NUM_WORKERS = 4
+
 
 # ──────────────── Training ────────────────
 NUM_EPOCHS = 20
