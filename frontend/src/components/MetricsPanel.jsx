@@ -4,15 +4,16 @@
    Confusion Matrix, and explanatory notes.
    ═══════════════════════════════════════════ */
 
-/* ── Validated Model Metrics (from Kaggle evaluation) ── */
+/* ── Validated Model Metrics (Kaggle evaluation, threshold=0.37 Youden-optimal) ── */
 const METRICS = {
-  accuracy: 0.7514,
-  precision: 0.6763,
-  recall: 0.7477,       // Sensitivity / TPR
-  specificity: 0.7539,  // TNR
-  f1: 0.7102,
+  accuracy: 0.7439,
+  precision: 0.6462,
+  recall: 0.8211,       // Sensitivity / TPR
+  specificity: 0.6909,  // TNR
+  f1: 0.7232,
   aucRoc: 0.8417,
-  confusion: { tn: 239, fp: 78, fn: 55, tp: 163 },
+  threshold: 0.37,
+  confusion: { tn: 219, fp: 98, fn: 39, tp: 179 },
   testSetSize: 535,
   malignantCount: 218,
   benignCount: 317,
@@ -132,6 +133,7 @@ export default function MetricsPanel() {
             <span className="text-slate-400 font-medium">Why accuracy alone is insufficient:</span>{" "}
             In screening tasks with class imbalance, a model could achieve high accuracy by simply predicting the majority class.
             Sensitivity (Recall) ensures malignant cases are not missed, while Specificity minimizes false alarms.
+            The classification threshold was tuned to <span className="text-teal-400 font-mono font-semibold">0.37</span> (Youden-optimal) to prioritize cancer detection.
             The AUC-ROC of <span className="text-teal-400 font-mono font-semibold">0.84</span> indicates strong discriminative ability across all thresholds.
           </p>
         </div>
