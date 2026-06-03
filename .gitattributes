@@ -1,1 +1,2 @@
 hf-deploy/app/models/model.pt filter=lfs diff=lfs merge=lfs -text
+backend/app/models/model.pt filter=lfs diff=lfs merge=lfs -text
