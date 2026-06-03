@@ -4,7 +4,7 @@ from torchvision import models
 import os
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "../models/model.pt")
-THRESHOLD = 0.5
+THRESHOLD = 0.37
 
 _model = None
 
