@@ -1,12 +1,3 @@
-"""
-FAHM Mammogram Classification — Evaluation Script
-Loads trained model, runs on the test split, and produces metrics + plots.
-
-Usage:
-    cd d:/fahm/model
-    python evaluate.py
-"""
-
 import os
 import sys
 
@@ -19,9 +10,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
+    precision_score,
     recall_score,
+    f1_score,
     roc_auc_score,
     roc_curve,
+    classification_report,
 )
 import matplotlib
 
@@ -115,51 +109,171 @@ def main():
 
     all_labels_np = np.array(all_labels)
     all_probs_np = np.array(all_probs)
-    all_preds = (all_probs_np >= 0.5).astype(int)
-
-    # ── 5. Metrics ──
-    accuracy = accuracy_score(all_labels_np, all_preds)
-    sensitivity = recall_score(all_labels_np, all_preds, pos_label=1, zero_division=0)
-
-    # Specificity = TN / (TN + FP)
-    tn, fp, fn, tp = confusion_matrix(all_labels_np, all_preds, labels=[0, 1]).ravel()
-    specificity = tn / (tn + fp) if (tn + fp) > 0 else 0.0
 
     auc_roc = roc_auc_score(all_labels_np, all_probs_np)
 
-    print("\n" + "=" * 50)
-    print("       EVALUATION RESULTS")
-    print("=" * 50)
-    print(f"  Accuracy:    {accuracy:.4f}")
-    print(f"  Sensitivity: {sensitivity:.4f}  (Recall / TPR)")
-    print(f"  Specificity: {specificity:.4f}  (TNR)")
+    # ── 5. Default Threshold (0.5) — Baseline ──
+    default_preds = (all_probs_np >= 0.5).astype(int)
+    default_acc = accuracy_score(all_labels_np, default_preds)
+    default_prec = precision_score(all_labels_np, default_preds, pos_label=1, zero_division=0)
+    default_recall = recall_score(all_labels_np, default_preds, pos_label=1, zero_division=0)
+    default_f1 = f1_score(all_labels_np, default_preds, pos_label=1, zero_division=0)
+    tn, fp, fn, tp = confusion_matrix(all_labels_np, default_preds, labels=[0, 1]).ravel()
+    default_spec = tn / (tn + fp) if (tn + fp) > 0 else 0.0
+
+    print("\n" + "=" * 70)
+    print("       BASELINE RESULTS (Default Threshold = 0.50)")
+    print("=" * 70)
+    print(f"  Accuracy:    {default_acc:.4f}")
+    print(f"  Precision:   {default_prec:.4f}  (PPV)")
+    print(f"  Recall:      {default_recall:.4f}  (Sensitivity / TPR)")
+    print(f"  Specificity: {default_spec:.4f}  (TNR)")
+    print(f"  F1-Score:    {default_f1:.4f}")
     print(f"  AUC-ROC:     {auc_roc:.4f}")
-    print("-" * 50)
-    print("  Confusion Matrix:")
-    print(f"    TN={tn}  FP={fp}")
-    print(f"    FN={fn}  TP={tp}")
-    print("=" * 50)
+    print("-" * 70)
+    print(f"  Confusion Matrix:  TN={tn}  FP={fp}  |  FN={fn}  TP={tp}")
+    print("=" * 70)
 
-    # ── 6. ROC Curve ──
-    fpr, tpr, _ = roc_curve(all_labels_np, all_probs_np)
+    # ── 6. Threshold Sweep ──
+    print("\n" + "=" * 70)
+    print("       THRESHOLD SWEEP ANALYSIS")
+    print("=" * 70)
+    print(f"  {'Thresh':>7} | {'Sens':>7} | {'Spec':>7} | {'Acc':>7} | {'Prec':>7} | {'F1':>7} | {'Youden J':>8} | {'TN':>4} {'FP':>4} {'FN':>4} {'TP':>4}")
+    print("-" * 95)
 
+    best_youden_j = -1
+    best_youden_thresh = 0.5
+    best_sens_thresh = None
+
+    sweep_thresholds = np.arange(0.25, 0.56, 0.01)
+    sweep_results = []
+
+    for thresh in sweep_thresholds:
+        preds = (all_probs_np >= thresh).astype(int)
+        acc = accuracy_score(all_labels_np, preds)
+        prec = precision_score(all_labels_np, preds, pos_label=1, zero_division=0)
+        sens = recall_score(all_labels_np, preds, pos_label=1, zero_division=0)
+        f1_val = f1_score(all_labels_np, preds, pos_label=1, zero_division=0)
+        tn_t, fp_t, fn_t, tp_t = confusion_matrix(all_labels_np, preds, labels=[0, 1]).ravel()
+        spec = tn_t / (tn_t + fp_t) if (tn_t + fp_t) > 0 else 0.0
+        youden_j = sens + spec - 1
+
+        marker = ""
+        if thresh == 0.50:
+            marker = " <-- DEFAULT"
+
+        print(f"  {thresh:>7.2f} | {sens:>6.4f} | {spec:>6.4f} | {acc:>6.4f} | {prec:>6.4f} | {f1_val:>6.4f} | {youden_j:>8.4f} | {tn_t:>4} {fp_t:>4} {fn_t:>4} {tp_t:>4}{marker}")
+
+        sweep_results.append({
+            'thresh': thresh, 'sens': sens, 'spec': spec, 'acc': acc,
+            'prec': prec, 'f1': f1_val, 'youden_j': youden_j,
+            'tn': tn_t, 'fp': fp_t, 'fn': fn_t, 'tp': tp_t
+        })
+
+        if youden_j > best_youden_j:
+            best_youden_j = youden_j
+            best_youden_thresh = thresh
+
+        if sens >= 0.85 and (best_sens_thresh is None or thresh > best_sens_thresh):
+            best_sens_thresh = thresh
+
+    print("-" * 95)
+
+    # ── 7. Summary ──
+    print("\n" + "=" * 70)
+    print("       OPTIMAL THRESHOLD RECOMMENDATIONS")
+    print("=" * 70)
+
+    def print_at_threshold(label, thresh):
+        preds = (all_probs_np >= thresh).astype(int)
+        acc = accuracy_score(all_labels_np, preds)
+        prec = precision_score(all_labels_np, preds, pos_label=1, zero_division=0)
+        sens = recall_score(all_labels_np, preds, pos_label=1, zero_division=0)
+        f1_val = f1_score(all_labels_np, preds, pos_label=1, zero_division=0)
+        tn_t, fp_t, fn_t, tp_t = confusion_matrix(all_labels_np, preds, labels=[0, 1]).ravel()
+        spec = tn_t / (tn_t + fp_t) if (tn_t + fp_t) > 0 else 0.0
+        youden = sens + spec - 1
+        print(f"\n  [{label}]  Threshold = {thresh:.2f}")
+        print(f"    Sensitivity: {sens:.4f}   Specificity: {spec:.4f}")
+        print(f"    Accuracy:    {acc:.4f}   Precision:   {prec:.4f}")
+        print(f"    F1-Score:    {f1_val:.4f}   Youden J:    {youden:.4f}")
+        print(f"    Confusion:   TN={tn_t}  FP={fp_t}  |  FN={fn_t}  TP={tp_t}")
+        return sens, spec
+
+    print_at_threshold("DEFAULT", 0.50)
+    youden_sens, youden_spec = print_at_threshold("YOUDEN OPTIMAL (best balanced)", best_youden_thresh)
+
+    if best_sens_thresh is not None:
+        clin_sens, clin_spec = print_at_threshold("CLINICAL (sensitivity >= 85%)", best_sens_thresh)
+    else:
+        closest_thresh = min(sweep_results, key=lambda x: abs(x['sens'] - 0.85))['thresh']
+        clin_sens, clin_spec = print_at_threshold("NEAREST TO 85% SENSITIVITY", closest_thresh)
+        best_sens_thresh = closest_thresh
+
+    print("\n" + "=" * 70)
+    print(f"  >>> RECOMMENDED THRESHOLD FOR DEPLOYMENT: {best_youden_thresh:.2f}")
+    print(f"  >>> (Youden-optimal balances sensitivity and specificity)")
+    print("=" * 70)
+
+    # ── 8. Plots ──
     docs_dir = os.path.join(os.path.dirname(__file__), "..", "docs")
     os.makedirs(docs_dir, exist_ok=True)
-    roc_path = os.path.join(docs_dir, "roc_curve.png")
 
-    plt.figure(figsize=(8, 6))
-    plt.plot(fpr, tpr, color="darkorange", lw=2, label=f"ROC (AUC = {auc_roc:.4f})")
-    plt.plot([0, 1], [0, 1], color="navy", lw=1, linestyle="--")
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel("False Positive Rate")
-    plt.ylabel("True Positive Rate")
-    plt.title("FAHM — ROC Curve (Mammogram Classification)")
-    plt.legend(loc="lower right")
+    fpr, tpr, roc_thresholds = roc_curve(all_labels_np, all_probs_np)
+
+    fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+
+    # ROC Curve with operating points
+    ax1 = axes[0]
+    ax1.plot(fpr, tpr, color="darkorange", lw=2, label=f"ROC Curve (AUC = {auc_roc:.4f})")
+    ax1.plot([0, 1], [0, 1], color="navy", lw=1, linestyle="--", alpha=0.5)
+    ax1.plot(1 - default_spec, default_recall, 'rs', markersize=12, label=f"Default (t=0.50)", zorder=5)
+    ax1.plot(1 - youden_spec, youden_sens, 'g^', markersize=12, label=f"Youden (t={best_youden_thresh:.2f})", zorder=5)
+    ax1.plot(1 - clin_spec, clin_sens, 'bD', markersize=10, label=f"Clinical (t={best_sens_thresh:.2f})", zorder=5)
+    ax1.set_xlim([0.0, 1.0])
+    ax1.set_ylim([0.0, 1.05])
+    ax1.set_xlabel("False Positive Rate (1 - Specificity)", fontsize=12)
+    ax1.set_ylabel("True Positive Rate (Sensitivity)", fontsize=12)
+    ax1.set_title("ROC Curve with Operating Points", fontsize=14)
+    ax1.legend(loc="lower right", fontsize=10)
+    ax1.grid(alpha=0.3)
+
+    # Threshold vs Metrics
+    ax2 = axes[1]
+    threshs = [r['thresh'] for r in sweep_results]
+    sens_vals = [r['sens'] for r in sweep_results]
+    spec_vals = [r['spec'] for r in sweep_results]
+    acc_vals = [r['acc'] for r in sweep_results]
+    f1_vals = [r['f1'] for r in sweep_results]
+
+    ax2.plot(threshs, sens_vals, 'r-o', markersize=3, lw=2, label="Sensitivity")
+    ax2.plot(threshs, spec_vals, 'b-s', markersize=3, lw=2, label="Specificity")
+    ax2.plot(threshs, acc_vals, 'g-^', markersize=3, lw=1.5, label="Accuracy")
+    ax2.plot(threshs, f1_vals, 'm-d', markersize=3, lw=1.5, label="F1-Score")
+    ax2.axvline(x=0.50, color='red', linestyle=':', alpha=0.5, label="Default (0.50)")
+    ax2.axvline(x=best_youden_thresh, color='green', linestyle=':', alpha=0.5, label=f"Youden ({best_youden_thresh:.2f})")
+    ax2.axhline(y=0.85, color='gray', linestyle='--', alpha=0.4, label="85% target")
+    ax2.set_xlim([0.25, 0.55])
+    ax2.set_ylim([0.4, 1.0])
+    ax2.set_xlabel("Classification Threshold", fontsize=12)
+    ax2.set_ylabel("Metric Value", fontsize=12)
+    ax2.set_title("Metrics vs. Classification Threshold", fontsize=14)
+    ax2.legend(loc="center left", fontsize=9)
+    ax2.grid(alpha=0.3)
+
     plt.tight_layout()
-    plt.savefig(roc_path, dpi=150)
+
+    roc_path = os.path.join(docs_dir, "roc_curve.png")
+    plt.savefig(roc_path, dpi=150, bbox_inches='tight')
     plt.close()
-    print(f"\nROC curve saved to: {roc_path}")
+    print(f"\nROC + Threshold analysis saved to: {roc_path}")
+
+    # Classification report at recommended threshold
+    print("\n" + "=" * 70)
+    print(f"  Classification Report at Recommended Threshold ({best_youden_thresh:.2f})")
+    print("=" * 70)
+    rec_preds = (all_probs_np >= best_youden_thresh).astype(int)
+    print(classification_report(all_labels_np, rec_preds, target_names=["Benign", "Malignant"]))
 
 
 if __name__ == "__main__":
