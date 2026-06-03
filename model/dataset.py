@@ -211,10 +211,20 @@ class MammogramDataset(Dataset):
 
     def __getitem__(self, idx: int):
         row = self.df.iloc[idx]
-        image = Image.open(row["image_path"]).convert("RGB")
+        image = Image.open(row["image_path"])
+
+        # Apply CLAHE to enhance contrast of mammogram ROIs
+        import cv2
+        import numpy as np
+        img_np = np.array(image.convert("L"))
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        img_clahe = clahe.apply(img_np)
+        image = Image.fromarray(img_clahe).convert("RGB")
+
         label = int(row["label"])
 
         if self.transform:
             image = self.transform(image)
 
         return image, label
+
