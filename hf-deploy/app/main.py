@@ -19,6 +19,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from app.services.inference import load_model
+import torch
+
+@app.on_event("startup")
+async def startup_event():
+    print("Pre-loading and warming up model...")
+    model = load_model()
+    dummy_input = torch.zeros(1, 3, 224, 224)
+    with torch.no_grad():
+        _ = model(dummy_input)
+    print("Model loaded and warmed up successfully.")
+
 app.include_router(predict.router)
 
 @app.get("/health")

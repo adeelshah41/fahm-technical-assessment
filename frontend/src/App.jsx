@@ -151,6 +151,7 @@ export default function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [apiStatus, setApiStatus] = useState("checking")
+  const [applyClahe, setApplyClahe] = useState(true)
 
   // Check API health on mount
   useEffect(() => {
@@ -185,7 +186,7 @@ export default function App() {
     setResult(null)
 
     try {
-      const data = await predictImage(file)
+      const data = await predictImage(file, applyClahe)
       setResult(data)
     } catch (err) {
       const message =
@@ -197,7 +198,7 @@ export default function App() {
     } finally {
       setLoading(false)
     }
-  }, [file])
+  }, [file, applyClahe])
 
   const handleReset = useCallback(() => {
     setFile(null)
@@ -226,6 +227,20 @@ export default function App() {
             preview={preview}
             disabled={loading}
           />
+          {file && !result && !loading && (
+            <div className="mt-4 flex items-center justify-center gap-2">
+              <input 
+                type="checkbox" 
+                id="clahe-toggle" 
+                checked={applyClahe} 
+                onChange={(e) => setApplyClahe(e.target.checked)}
+                className="w-4 h-4 accent-teal-500 cursor-pointer"
+              />
+              <label htmlFor="clahe-toggle" className="text-sm text-slate-300 select-none cursor-pointer">
+                Apply CLAHE Contrast Enhancement (Recommended)
+              </label>
+            </div>
+          )}
         </div>
 
         {/* Analyze Button */}

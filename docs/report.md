@@ -41,11 +41,7 @@ To resolve this visual degradation, we introduced an in-memory **Contrast Limite
 2. CLAHE is applied using a clip limit of `2.0` and a grid tile size of `8x8` to dynamically enhance local tissue contrast without amplifying noise.
 3. The image is converted back to RGB and resized using high-quality bilinear interpolation to $224 \times 224$ for model input.
 
-> [!IMPORTANT]
-> **Preprocessing Parity:** This CLAHE preprocessor is executed dynamically in RAM during both training data loading (`dataset.py`) and live inference (`preprocessor.py`). This guarantees exact train-inference parity.
-> **Zero disk footprints:** Preprocessing is completed on-the-fly in-memory; raw files are never modified on disk, meeting medical data integrity requirements.
-
----
+You can checkout the dataset here : [https://www.kaggle.com/datasets/awsaf49/cbis-ddsm-breast-cancer-image-dataset](https://www.kaggle.com/datasets/awsaf49/cbis-ddsm-breast-cancer-image-dataset)
 
 ## 3. Machine Learning Model Optimization
 The core engine is an **EfficientNet-B0** convolutional neural network pretrained on `IMAGENET1K_V1`. 

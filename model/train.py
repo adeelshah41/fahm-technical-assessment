@@ -69,9 +69,9 @@ val_transforms = transforms.Compose([
 # ────────────────────────────────────────────────────────
 
 def build_model(device: torch.device) -> nn.Module:
-    """EfficientNet-B4 with a single-output (sigmoid) classifier head."""
-    weights = models.EfficientNet_B4_Weights.IMAGENET1K_V1
-    model = models.efficientnet_b4(weights=weights)
+    """EfficientNet-B0 with a single-output (sigmoid) classifier head."""
+    weights = models.EfficientNet_B0_Weights.IMAGENET1K_V1
+    model = models.efficientnet_b0(weights=weights)
     in_features = model.classifier[1].in_features
     model.classifier = nn.Sequential(
         nn.Dropout(p=0.4, inplace=True),
