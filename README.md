@@ -94,6 +94,9 @@ docker-compose up --build
 
 ## 🧠 Model Training
 
+The classifier was trained on the curated **CBIS-DDSM** dataset. You can view and download the data here: 
+[CBIS-DDSM Breast Cancer Image Dataset (Kaggle)](https://www.kaggle.com/datasets/awsaf49/cbis-ddsm-breast-cancer-image-dataset)
+
 To retrain the EfficientNet-B0 classifier from scratch:
 
 ```bash
