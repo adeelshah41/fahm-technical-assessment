@@ -31,7 +31,7 @@ graph LR
     end
     
     B -->|HTTPS POST<br/>Image or DICOM| C
-    E -.->|Predicted (Benign or Malignant)| C
+    E -.->|"Predicted (Benign or Malignant)"| C
     C -.->|JSON Response<br/>Prediction & Confidence| B
     
     style A fill:#000,stroke:#333,color:#fff
