@@ -15,6 +15,12 @@ This project is a secure, decoupled full-stack AI application that processes mam
 
 ---
 
+## 🌐 Live Application Links
+- **Frontend Workstation:** [https://fahm-mammogram-classifier.vercel.app](https://fahm-mammogram-classifier.vercel.app)
+- **Backend API Docs:** [https://adeel41-mammogram-classifier.hf.space/docs](https://adeel41-mammogram-classifier.hf.space/docs)
+
+---
+
 ## 🏗️ System Architecture
 
 The application separates concerns between a highly responsive React client and an isolated, containerized Deep Learning inference engine, ensuring maximum performance, zero UI-blocking, and strict data security.
