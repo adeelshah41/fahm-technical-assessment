@@ -31,7 +31,7 @@ graph LR
     end
     
     B -->|HTTPS POST<br/>Image or DICOM| C
-    E -.->|Probability| C
+    E -.->|Predicted (Benign or Malignant)| C
     C -.->|JSON Response<br/>Prediction & Confidence| B
     
     style A fill:#000,stroke:#333,color:#fff
@@ -46,23 +46,17 @@ graph LR
 The development of this system followed a rigorous end-to-end Machine Learning lifecycle:
 
 ```mermaid
-flowchart TD
-    A([🔍 1. Research & Data Collection<br/>CBIS-DDSM Dataset Analysis]) --> B([🧹 2. Data Preprocessing<br/>DICOM Parsing & CLAHE Enhancement])
-    B --> C([🧠 3. Model Training<br/>EfficientNet-B0 & Hyperparameter Tuning])
-    C --> D([⚙️ 4. Backend API Development<br/>FastAPI & PyTorch Inference Integration])
-    D --> E([🎨 5. Frontend UI Development<br/>React, Tailwind, & UX Design])
-    E --> F([🔗 6. Full-Stack Integration<br/>CORS, API Connectivity, Dockerization])
-    F --> G([🚀 7. Cloud Deployment<br/>Vercel CDN & Hugging Face Spaces])
-    G --> H([📝 8. Documentation<br/>Technical Reports & Final Delivery])
-    
+flowchart LR
+    A([🔍 1. Data Prep<br/>CBIS-DDSM & CLAHE]) --> B([🧠 2. ML Training<br/>EfficientNet-B0])
+    B --> C([💻 3. App Dev<br/>FastAPI & React])
+    C --> D([🔗 4. Deploy<br/>Vercel & HF Spaces])
+    D --> E([📝 5. Delivery<br/>Docs & Report])
+
     style A fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
     style B fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
     style C fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
     style D fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
     style E fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
-    style F fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
-    style G fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
-    style H fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
 ```
 
 ---
